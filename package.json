@@ -1,0 +1,20 @@
+{
+  "name": "rain-sukhothai",
+  "version": "1.1.0",
+  "private": true,
+  "description": "A Thai weather dashboard for Sukhothai province.",
+  "scripts": {
+    "start": "node scripts/serve.cjs",
+    "test": "node --test tests/*.test.cjs",
+    "test:e2e": "playwright test",
+    "test:all": "npm test && npm run test:e2e",
+    "check:system": "node scripts/check-system.cjs",
+    "icons": "node scripts/make-icons.cjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}

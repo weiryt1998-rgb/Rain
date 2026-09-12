@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.open-meteo.com; manifest-src 'self'; worker-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#1b2a5c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b1633" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="Rain สุโขทัย — ดูสภาพอากาศทั้ง 9 อำเภอ พยากรณ์รายชั่วโมงและ 7 วัน โอกาสฝน อุณหภูมิ ลม และดัชนี UV ในที่เดียว">
+  <meta name="application-name" content="Rain">
+  <meta name="apple-mobile-web-app-title" content="Rain">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Rain — สภาพอากาศสุโขทัย">
+  <meta property="og:title" content="Rain — สภาพอากาศสุโขทัย">
+  <meta property="og:description" content="สภาพอากาศและพยากรณ์ทั้ง 9 อำเภอในจังหวัดสุโขทัย รายชั่วโมงและ 7 วัน">
+  <meta property="og:locale" content="th_TH">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Rain — สภาพอากาศสุโขทัย">
+  <meta name="twitter:description" content="สภาพอากาศและพยากรณ์ทั้ง 9 อำเภอในจังหวัดสุโขทัย รายชั่วโมงและ 7 วัน">
+  <title>Rain — สภาพอากาศสุโขทัย</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://api.open-meteo.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="theme-init.js"></script>
+  <script src="weather-core.js" defer></script>
+  <script src="weather-backdrop.js" defer></script>
+  <script src="script.js" defer></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Rain — สภาพอากาศสุโขทัย","applicationCategory":"WeatherApplication","operatingSystem":"Any","inLanguage":"th","description":"สภาพอากาศและพยากรณ์ทั้ง 9 อำเภอในจังหวัดสุโขทัย","offers":{"@type":"Offer","price":"0","priceCurrency":"THB"}}</script>
+</head>
+<body data-weather="loading" data-weather-time="unknown">
+  <div class="weather-backdrop" id="weather-backdrop" aria-hidden="true">
+    <img class="weather-photo" alt="" decoding="async" width="3840" height="2160">
+    <img class="weather-photo" alt="" decoding="async" width="3840" height="2160">
+    <div class="weather-shade"></div>
+    <div class="weather-atmosphere"></div>
+  </div>
+  <a class="skip-link" href="#main">ข้ามไปยังสภาพอากาศ</a>
+  <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></symbol>
+      <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3S5 11 5 15a7 7 0 0 0 14 0c0-4-7-12-7-12Z"/><path d="M8.5 15a3.5 3.5 0 0 0 3.5 3.5"/></symbol>
+      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+      <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17l-6-4-6 4Z"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+      <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 7a8 8 0 0 1 13-1L20 8M4 16l1.4 2a8 8 0 0 0 13-1"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+      <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V3m-4 4 4-4 4 4M5 11v9h14v-9"/></symbol>
+      <symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 8h12a3 3 0 1 0-3-3M2 12h17a3 3 0 1 1-3 3M4 16h5a3 3 0 1 1-3 3"/></symbol>
+      <symbol id="i-sunrise" viewBox="0 0 24 24"><path d="M3 18h18M2 22h20M6 18a6 6 0 0 1 12 0M12 3v7m-3-4 3-3 3 3M3 11l2 2m14 0 2-2"/></symbol>
+      <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 19a10 10 0 1 1 16 0H4Z"/><path d="m12 14 4-5M5 13h1m12 0h1M12 5v1"/><circle cx="12" cy="14" r="1"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.1"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19L12 3Z"/><path d="M12 10v4m0 3v.1"/></symbol>
+      <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M3 3l18 18M5 10a13 13 0 0 1 4.6-2.6M12 6a13 13 0 0 1 9 4M8.5 13.5a8 8 0 0 1 3.5-1.5m4 1.5a8 8 0 0 0-1.5-1"/><circle cx="12" cy="18" r="1"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+      <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M6 19a5 5 0 0 1-1-9.9 7 7 0 0 1 13.4-1A5.5 5.5 0 0 1 18 19Z"/></symbol>
+      <symbol id="i-umbrella" viewBox="0 0 24 24"><path d="M12 3v1M3 12a9 9 0 0 1 18 0Z"/><path d="M12 12v7a2 2 0 0 0 4 0"/></symbol>
+      <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M10 14.5V5a2 2 0 1 1 4 0v9.5a4 4 0 1 1-4 0Z"/><path d="M12 10v7"/></symbol>
+      <symbol id="w-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+      <symbol id="w-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5Z"/></symbol>
+      <symbol id="w-partly" viewBox="0 0 24 24"><path d="M8 11a4 4 0 1 1 7.4-2M8 3v1.5M3 8h1.5M4.6 4.6l1 1"/><path d="M8 20a3.5 3.5 0 0 1-.7-6.9 5 5 0 0 1 9.6-.7A3.8 3.8 0 0 1 17 20Z"/></symbol>
+      <symbol id="w-cloud" viewBox="0 0 24 24"><path d="M6 19a5 5 0 0 1-1-9.9 7 7 0 0 1 13.4-1A5.5 5.5 0 0 1 18 19Z"/></symbol>
+      <symbol id="w-fog" viewBox="0 0 24 24"><path d="M6 14a5 5 0 0 1-1-9.9A7 7 0 0 1 18.4 3 5.5 5.5 0 0 1 20 13.5"/><path d="M4 17h16M6 21h12"/></symbol>
+      <symbol id="w-rain" viewBox="0 0 24 24"><path d="M6 15a5 5 0 0 1-1-9.9 7 7 0 0 1 13.4-1A5.5 5.5 0 0 1 18 15"/><path d="m8 17-1.5 4M12 17l-1.5 4M16 17l-1.5 4"/></symbol>
+      <symbol id="w-snow" viewBox="0 0 24 24"><path d="M6 15a5 5 0 0 1-1-9.9 7 7 0 0 1 13.4-1A5.5 5.5 0 0 1 18 15"/><path d="M8 18v.1M12 21v.1M16 18v.1M10 21v.1M14 18v.1"/></symbol>
+      <symbol id="w-storm" viewBox="0 0 24 24"><path d="M6 15a5 5 0 0 1-1-9.9 7 7 0 0 1 13.4-1A5.5 5.5 0 0 1 18 15"/><path d="M13 13l-2.5 4H14l-2.5 5"/></symbol>
+    </defs>
+  </svg>
+
+  <aside class="sidebar">
+    <a class="brand" href="./" aria-label="Rain หน้าหลัก"><span class="brand-mark"><svg class="icon"><use href="#i-drop"/></svg></span><span class="brand-text">rain<span class="brand-dot">.</span></span></a>
+    <div class="sidebar-label">YOUR LOCAL WEATHER</div>
+    <nav class="nav" aria-label="เมนูหลัก">
+      <a class="nav-item is-active" href="#overview" data-nav="overview" aria-current="location" title="ภาพรวมวันนี้"><svg class="icon"><use href="#i-grid"/></svg><span>ภาพรวมวันนี้</span></a>
+      <a class="nav-item" href="#forecast" data-nav="forecast" title="พยากรณ์อากาศ"><svg class="icon"><use href="#i-clock"/></svg><span>พยากรณ์อากาศ</span></a>
+      <a class="nav-item" href="#districts" data-nav="districts" title="อำเภอในสุโขทัย"><svg class="icon"><use href="#i-pin"/></svg><span>อำเภอในสุโขทัย</span><span class="nav-count" aria-label="9 อำเภอ">9</span></a>
+      <a class="nav-item" href="#saved" data-nav="saved" title="รายการที่บันทึก"><svg class="icon"><use href="#i-bookmark"/></svg><span>รายการที่บันทึก</span><span class="nav-count" id="saved-count" aria-label="บันทึกแล้ว 0 อำเภอ">0</span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="local-note"><span class="mini-sun" aria-hidden="true">☀</span><p>รู้ฟ้า รู้ฝน<br><strong>วางแผนทุกวันได้ดีขึ้น</strong></p><span>เพื่อทุกวันของชาวสุโขทัย</span></div>
+      <div class="sidebar-location"><svg class="icon"><use href="#i-pin"/></svg><span>สุโขทัย, ประเทศไทย<small>เวลาท้องถิ่น GMT+7 · <time id="sidebar-clock">--:--</time></small></span></div>
+    </div>
+  </aside>
+
+  <div class="workspace">
+    <header class="topbar">
+      <div class="breadcrumb" aria-label="ตำแหน่งปัจจุบัน">ประเทศไทย <svg class="icon"><use href="#i-arrow"/></svg><strong>สุโขทัย</strong><svg class="icon"><use href="#i-arrow"/></svg><strong id="breadcrumb-district">เมืองสุโขทัย</strong></div>
+      <div class="topbar-actions">
+        <form class="search" id="search-form" role="search" autocomplete="off">
+          <svg class="icon"><use href="#i-search"/></svg>
+          <input id="search-input" type="search" placeholder="ค้นหาอำเภอในสุโขทัย..." aria-label="ค้นหาอำเภอในสุโขทัย" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" aria-haspopup="listbox" enterkeyhint="search" spellcheck="false">
+          <kbd aria-hidden="true" title="กด / เพื่อค้นหา">/</kbd>
+          <ul class="suggestions" id="suggestions" role="listbox" aria-label="ผลการค้นหาอำเภอ" hidden></ul>
+        </form>
+        <button class="icon-button" id="geo-btn" type="button" title="หาอำเภอใกล้ฉัน" aria-label="หาอำเภอใกล้ฉัน"><svg class="icon"><use href="#i-target"/></svg></button>
+        <span class="topbar-divider" aria-hidden="true"></span>
+        <button class="icon-button" id="theme-btn" type="button" title="เปลี่ยนเป็นธีมมืด" aria-label="เปลี่ยนเป็นธีมมืด"><svg class="icon"><use href="#i-moon"/></svg></button>
+        <button class="icon-button" id="weather-motion-btn" type="button" title="หยุดภาพพื้นหลังเคลื่อนไหว" aria-label="หยุดภาพพื้นหลังเคลื่อนไหว" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-pause"/></svg></button>
+      </div>
+    </header>
+
+    <main id="main" class="main" tabindex="-1">
+      <section id="overview" class="page-heading">
+        <div>
+          <div class="eyebrow">SUKHOTHAI WEATHER</div>
+          <h1>สุโขทัย วันนี้เป็นอย่างไร<span class="heading-dot">.</span></h1>
+          <p id="today-date">สภาพอากาศใกล้ตัว ให้คุณพร้อมสำหรับทุกวัน</p>
+        </div>
+        <div class="heading-actions">
+          <span class="live-status" id="live-status" role="status" aria-live="polite" data-state="loading"><span aria-hidden="true"></span><em>กำลังเชื่อมต่อ</em></span>
+          <button class="icon-button refresh-btn" type="button" id="refresh-btn" aria-label="อัปเดตข้อมูล" title="อัปเดตข้อมูล (R)"><svg class="icon"><use href="#i-refresh"/></svg></button>
+          <div class="unit-toggle" role="group" aria-label="หน่วยอุณหภูมิ"><button type="button" data-unit="c" class="is-active" aria-pressed="true">°C</button><button type="button" data-unit="f" aria-pressed="false">°F</button></div>
+        </div>
+      </section>
+
+      <div id="status-banner" class="status-banner" role="alert" hidden data-kind="info"><svg class="icon"><use href="#i-info"/></svg><span id="status-text"></span><button type="button" id="retry-btn">ลองอีกครั้ง</button><button type="button" class="banner-close" id="banner-close" aria-label="ปิดข้อความ"><svg class="icon"><use href="#i-close"/></svg></button></div>
+
+      <div class="dashboard-grid" id="weather-content" aria-busy="true">
+        <section class="current-card" id="current-card" aria-labelledby="place-name" data-condition="loading">
+          <div class="hero-art" aria-hidden="true"><img class="hero-photo hero-photo-day" src="images/hero/sukhothai-sunset.jpg" alt="" width="1040" height="580" decoding="async"><img class="hero-photo hero-photo-night" src="images/hero/sukhothai-night.jpg" alt="" width="1040" height="580" decoding="async" loading="lazy"><svg class="hero-fx" viewBox="0 0 420 235" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"><g class="hero-stars" fill="#fff8e1" opacity="0"><circle cx="38" cy="28" r="1.3"/><circle cx="96" cy="16" r="0.9"/><circle cx="150" cy="40" r="1.1"/><circle cx="236" cy="20" r="1"/><circle cx="300" cy="34" r="1.3"/><circle cx="352" cy="14" r="0.9"/><circle cx="392" cy="46" r="1.1"/><circle cx="200" cy="60" r="0.8"/><circle cx="70" cy="66" r="0.8"/><circle cx="330" cy="70" r="0.9"/></g><g class="hero-rain" stroke="#cfe6ff" stroke-width="0.9" stroke-linecap="round" opacity="0"><path d="M40 10l-5 18M92 0l-5 18M140 24l-5 18M190 6l-5 18M240 30l-5 18M300 12l-5 18M350 40l-5 18M396 18l-5 18M70 60l-5 18M120 72l-5 18M170 92l-5 18M220 66l-5 18M270 90l-5 18M320 100l-5 18M372 80l-5 18M28 118l-5 18M88 136l-5 18M160 150l-5 18M250 140l-5 18M340 150l-5 18M400 132l-5 18"/></g></svg><span>เมืองมรดกโลก แห่งความสุข</span></div>
+          <div class="current-top">
+            <div>
+              <div class="current-location"><svg class="icon"><use href="#i-pin"/></svg><h2 id="place-name">อำเภอเมืองสุโขทัย</h2></div>
+              <p id="place-meta">จังหวัดสุโขทัย · ประเทศไทย</p>
+            </div>
+            <button class="hero-save" type="button" id="save-btn" aria-label="บันทึกอำเภอนี้" aria-pressed="false" title="บันทึกอำเภอนี้"><svg class="icon"><use href="#i-bookmark"/></svg></button>
+          </div>
+          <div class="current-body">
+            <div class="temperature-block">
+              <div class="current-temperature"><span id="current-temp" class="skeleton-text">—</span><span class="temperature-unit" id="current-unit">°C</span></div>
+              <div class="current-condition"><span id="current-icon" aria-hidden="true"></span><span id="current-condition">กำลังโหลดสภาพอากาศ</span></div>
+              <p class="feels-like">รู้สึกเหมือน <strong id="current-feels">—</strong> <span class="temp-divider" aria-hidden="true">·</span> สูงสุด <span id="current-max">—</span> ต่ำสุด <span id="current-min">—</span></p>
+            </div>
+            
+          </div>
+          <div class="current-bottom">
+            <span><svg class="icon"><use href="#i-drop"/></svg>โอกาสฝน <strong id="current-rain">—</strong></span>
+            <span><svg class="icon"><use href="#i-wind"/></svg>ลม <strong id="current-wind">—</strong></span>
+            <span><svg class="icon"><use href="#i-umbrella"/></svg>ฝนวันนี้ <strong id="current-rain-mm">—</strong></span>
+            <span class="current-update" id="current-update">รอข้อมูลพยากรณ์</span>
+          </div>
+        </section>
+
+        <section class="card daily-card" aria-labelledby="daily-heading">
+          <div class="section-heading"><h2 id="daily-heading">พยากรณ์ 7 วัน</h2><span class="small-badge">รายวัน</span></div>
+          <p class="section-description">วางแผนล่วงหน้าได้ทุกวัน</p>
+          <div class="daily-legend" aria-hidden="true"><span>วัน / สภาพอากาศ</span><span>ต่ำสุด — สูงสุด</span></div>
+          <div id="daily-list" class="daily-list"></div>
+          <div class="daily-footnote"><svg class="icon"><use href="#i-info"/></svg>เลือกวันเพื่อดูพยากรณ์รายชั่วโมงของวันนั้น</div>
+        </section>
+
+        <section id="forecast" class="card hourly-card" aria-labelledby="hourly-heading">
+          <div class="section-heading hourly-heading">
+            <div><h2 id="hourly-heading">พยากรณ์รายชั่วโมง</h2><p class="section-description" id="hourly-subtitle">24 ชั่วโมงข้างหน้า · เวลาประเทศไทย</p></div>
+            <div class="hourly-arrows"><button class="icon-button" type="button" id="hour-prev" title="เลื่อนไปก่อนหน้า" aria-label="เลื่อนรายชั่วโมงไปก่อนหน้า"><svg class="icon flip"><use href="#i-arrow"/></svg></button><button class="icon-button" type="button" id="hour-next" title="เลื่อนไปถัดไป" aria-label="เลื่อนรายชั่วโมงไปถัดไป"><svg class="icon"><use href="#i-arrow"/></svg></button></div>
+          </div>
+          <div class="forecast-controls">
+            <div class="chart-tabs" role="group" aria-label="ข้อมูลในกราฟ"><button class="is-active" type="button" data-chart="temp" aria-pressed="true">อุณหภูมิ</button><button type="button" data-chart="rain" aria-pressed="false">โอกาสฝน</button><button type="button" data-chart="wind" aria-pressed="false">ลม</button></div>
+            <button class="text-button" type="button" id="reset-day" hidden><svg class="icon"><use href="#i-close"/></svg>กลับไป 24 ชั่วโมงข้างหน้า</button>
+            <span class="chart-unit" id="chart-unit">°C</span>
+          </div>
+          <div class="hourly-scroll" id="hourly-scroll" tabindex="0" role="region" aria-label="พยากรณ์รายชั่วโมง ใช้ปุ่มลูกศรซ้ายขวาเพื่อเลื่อน">
+            <div class="hourly-inner" id="hourly-inner">
+              <div id="hourly-list" class="hourly-list" role="list"></div>
+              <div id="hourly-chart" class="hourly-chart"></div>
+            </div>
+          </div>
+          <p class="hourly-summary" id="hourly-summary" aria-live="polite"></p>
+        </section>
+      </div>
+
+      <section class="details-section" aria-labelledby="details-heading">
+        <div class="section-heading outside-heading"><h2 id="details-heading">รายละเอียดอากาศวันนี้</h2><span class="section-meta">เรื่องเล็ก ๆ ที่ช่วยให้พร้อมออกจากบ้าน</span></div>
+        <div class="details-grid">
+          <article class="card metric-card"><div class="metric-title"><svg class="icon"><use href="#i-drop"/></svg><h3>ความชื้น</h3></div><div class="metric-value" id="d-humidity">—<small>%</small></div><div class="meter humidity-meter" role="meter" aria-labelledby="humidity-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="humidity-meter"><span id="humidity-bar"></span></div><p id="humidity-note"><span id="humidity-label" hidden>ความชื้นสัมพัทธ์</span>รอข้อมูลความชื้นสัมพัทธ์</p></article>
+          <article class="card metric-card"><div class="metric-title"><svg class="icon"><use href="#i-wind"/></svg><h3>ความเร็วลม</h3></div><div class="metric-value" id="d-wind">—<small>กม./ชม.</small></div><div class="wind-indicator"><span id="wind-arrow" aria-hidden="true">↑</span><span id="wind-direction">—</span></div><p id="wind-note">รอข้อมูลลมกระโชก</p></article>
+          <article class="card metric-card"><div class="metric-title"><svg class="icon"><use href="#i-sun"/></svg><h3>ดัชนี UV</h3><span class="metric-badge" id="uv-badge" data-level="unknown">—</span></div><div class="metric-value" id="d-uv">—<small>/ 11+</small></div><div class="uv-scale" aria-hidden="true"><span id="uv-marker"></span></div><p id="uv-note">ค่าพยากรณ์ในชั่วโมงนี้</p></article>
+          <article class="card metric-card sunrise-card"><div class="metric-title"><svg class="icon"><use href="#i-sunrise"/></svg><h3>พระอาทิตย์</h3></div><div class="sun-times"><div><span>ขึ้น</span><strong id="sunrise">—</strong></div><svg class="sun-arc" viewBox="0 0 100 45" aria-hidden="true"><path d="M5 40a45 38 0 0 1 90 0"/><path class="sun-horizon" d="M0 40h100"/><circle id="sun-position" cx="50" cy="2" r="5"/></svg><div><span>ตก</span><strong id="sunset">—</strong></div></div><p id="sun-note">เวลาพระอาทิตย์ขึ้นและตกวันนี้</p></article>
+          <article class="card metric-card"><div class="metric-title"><svg class="icon"><use href="#i-gauge"/></svg><h3>ความกดอากาศ</h3></div><div class="metric-value" id="d-pressure">—<small>hPa</small></div><p id="pressure-note">ปรับเทียบที่ระดับน้ำทะเล</p></article>
+          <article class="card metric-card"><div class="metric-title"><svg class="icon"><use href="#i-eye"/></svg><h3>ทัศนวิสัย</h3></div><div class="metric-value" id="d-visibility">—<small>กม.</small></div><p id="visibility-note">ระยะการมองเห็นในชั่วโมงนี้</p></article>
+        </div>
+      </section>
+
+      <section class="weather-insight" id="weather-insight" aria-labelledby="insight-title" data-tone="neutral">
+        <div class="insight-icon"><svg class="icon" id="insight-icon"><use href="#i-cloud"/></svg></div>
+        <div><h2 id="insight-title">เตรียมวันของคุณให้พร้อม</h2><p id="insight-text">กำลังตรวจสอบแนวโน้มฝนและอุณหภูมิจากพยากรณ์ล่าสุด</p></div>
+        <a href="https://www.tmd.go.th/warning-and-events" target="_blank" rel="noopener noreferrer">ประกาศกรมอุตุฯ <span aria-hidden="true">↗</span></a>
+      </section>
+
+      <section id="districts" class="districts-section" aria-labelledby="districts-heading">
+        <div class="section-heading outside-heading"><div><h2 id="districts-heading">ใกล้หรือไกล ในสุโขทัยเหมือนกัน</h2><p class="section-description">เลือกดูสภาพอากาศทั้ง 9 อำเภอ</p></div><span class="small-badge" id="districts-badge">9 อำเภอ</span></div>
+        <div id="district-list" class="district-grid"></div>
+        <p class="district-note">พยากรณ์ตามพิกัดตัวแทนของแต่ละอำเภอ สภาพอากาศจริงในพื้นที่อาจแตกต่างกัน</p>
+      </section>
+
+      <section id="saved" class="saved-section" aria-labelledby="saved-heading">
+        <div class="section-heading outside-heading"><h2 id="saved-heading">อำเภอที่คุณติดตาม</h2><svg class="icon muted"><use href="#i-bookmark"/></svg></div>
+        <div id="saved-list" class="saved-list"></div>
+      </section>
+
+      <footer class="footer">
+        <div><span class="footer-brand">rain.</span><span>ทุกวันดี ๆ เริ่มที่รู้สภาพอากาศ</span></div>
+        <p>ข้อมูลพยากรณ์จาก <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo ↗</a> (CC BY 4.0) · เวลาไทย (GMT+7)<br><span>ข้อมูลจากแบบจำลองอากาศ ไม่ใช่ค่าตรวจวัดจากสถานี · อัปเดตอัตโนมัติทุก 15 นาทีเมื่อเปิดหน้านี้</span><br><span>ภาพพื้นหลังจาก Unsplash โดย <a href="https://unsplash.com/photos/a-field-of-tall-grass-with-the-sun-in-the-background-UVfF-uugU9k" target="_blank" rel="noopener noreferrer">Bernd Dittrich</a>, <a href="https://unsplash.com/photos/green-grass-field-under-cloudy-sky-during-daytime-q6zIaO-EmIE" target="_blank" rel="noopener noreferrer">Tobias Siebenlist</a>, <a href="https://unsplash.com/photos/dark-storm-clouds-with-heavy-rain-over-a-flat-landscape-H9nT7mYrtlM" target="_blank" rel="noopener noreferrer">Steve Gribble</a>, <a href="https://unsplash.com/photos/clouds-with-thunder-digital-wallpaper-L4-16dmZ-1c" target="_blank" rel="noopener noreferrer">Felix Mittermeier</a> <a href="https://unsplash.com/photos/a-full-moon-is-seen-above-a-mountain-range-sVHVffpeklI" target="_blank" rel="noopener noreferrer">Ashwini Chaudhary</a> · ภาพสุโขทัยในการ์ดโดย <a href="https://unsplash.com/photos/OeGT6FQ0bYI" target="_blank" rel="noopener noreferrer">Valeriy Ryasnyanskiy</a> และ <a href="https://unsplash.com/photos/oJXR4nJlxZI" target="_blank" rel="noopener noreferrer">Peter Borter</a></span></p>
+        <div class="footer-actions"><button class="text-button" id="install-btn" type="button" hidden>ติดตั้งแอป</button><button class="text-button" id="share-btn" type="button"><svg class="icon"><use href="#i-share"/></svg>แชร์หน้านี้</button></div>
+      </footer>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <noscript><div class="noscript">กรุณาเปิด JavaScript เพื่อโหลดข้อมูลสภาพอากาศสุโขทัย</div></noscript>
+</body>
+</html>

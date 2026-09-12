@@ -1,0 +1,20 @@
+{
+  "name": "Rain — สภาพอากาศสุโขทัย",
+  "short_name": "Rain",
+  "description": "สภาพอากาศและพยากรณ์ทั้ง 9 อำเภอในจังหวัดสุโขทัย",
+  "lang": "th",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b1633",
+  "theme_color": "#1b2a5c",
+  "categories": ["weather", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
