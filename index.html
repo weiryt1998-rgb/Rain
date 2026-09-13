@@ -86,10 +86,10 @@
     <a class="brand" href="./" aria-label="Rain หน้าหลัก"><span class="brand-mark"><svg class="icon"><use href="#i-drop"/></svg></span><span class="brand-text">rain<span class="brand-dot">.</span></span></a>
     <div class="sidebar-label">YOUR LOCAL WEATHER</div>
     <nav class="nav" aria-label="เมนูหลัก">
-      <a class="nav-item is-active" href="#overview" data-nav="overview" aria-current="location" title="ภาพรวมวันนี้"><svg class="icon"><use href="#i-grid"/></svg><span>ภาพรวมวันนี้</span></a>
-      <a class="nav-item" href="#forecast" data-nav="forecast" title="พยากรณ์อากาศ"><svg class="icon"><use href="#i-clock"/></svg><span>พยากรณ์อากาศ</span></a>
-      <a class="nav-item" href="#districts" data-nav="districts" title="อำเภอในสุโขทัย"><svg class="icon"><use href="#i-pin"/></svg><span>อำเภอในสุโขทัย</span><span class="nav-count" aria-label="9 อำเภอ">9</span></a>
-      <a class="nav-item" href="#saved" data-nav="saved" title="รายการที่บันทึก"><svg class="icon"><use href="#i-bookmark"/></svg><span>รายการที่บันทึก</span><span class="nav-count" id="saved-count" aria-label="บันทึกแล้ว 0 อำเภอ">0</span></a>
+      <a class="nav-item is-active" href="#overview" data-nav="overview" aria-current="location" title="ภาพรวมวันนี้"><svg class="icon"><use href="#i-grid"/></svg><span class="nav-label">ภาพรวมวันนี้</span><span class="nav-label-short" aria-hidden="true">วันนี้</span></a>
+      <a class="nav-item" href="#forecast" data-nav="forecast" title="พยากรณ์อากาศ"><svg class="icon"><use href="#i-clock"/></svg><span class="nav-label">พยากรณ์อากาศ</span><span class="nav-label-short" aria-hidden="true">พยากรณ์</span></a>
+      <a class="nav-item" href="#districts" data-nav="districts" title="อำเภอในสุโขทัย"><svg class="icon"><use href="#i-pin"/></svg><span class="nav-label">อำเภอในสุโขทัย</span><span class="nav-label-short" aria-hidden="true">อำเภอ</span><span class="nav-count" aria-label="9 อำเภอ">9</span></a>
+      <a class="nav-item" href="#saved" data-nav="saved" title="รายการที่บันทึก"><svg class="icon"><use href="#i-bookmark"/></svg><span class="nav-label">รายการที่บันทึก</span><span class="nav-label-short" aria-hidden="true">บันทึก</span><span class="nav-count is-empty" id="saved-count" aria-label="บันทึกแล้ว 0 อำเภอ">0</span></a>
     </nav>
     <div class="sidebar-bottom">
       <div class="local-note"><span class="mini-sun" aria-hidden="true">☀</span><p>รู้ฟ้า รู้ฝน<br><strong>วางแผนทุกวันได้ดีขึ้น</strong></p><span>เพื่อทุกวันของชาวสุโขทัย</span></div>
@@ -103,7 +103,7 @@
       <div class="topbar-actions">
         <form class="search" id="search-form" role="search" autocomplete="off">
           <svg class="icon"><use href="#i-search"/></svg>
-          <input id="search-input" type="search" placeholder="ค้นหาอำเภอในสุโขทัย..." aria-label="ค้นหาอำเภอในสุโขทัย" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" aria-haspopup="listbox" enterkeyhint="search" spellcheck="false">
+          <input id="search-input" type="search" placeholder="ค้นหาอำเภอในสุโขทัย..." data-placeholder-short="ค้นหาอำเภอ..." aria-label="ค้นหาอำเภอในสุโขทัย" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions" aria-haspopup="listbox" enterkeyhint="search" spellcheck="false">
           <kbd aria-hidden="true" title="กด / เพื่อค้นหา">/</kbd>
           <ul class="suggestions" id="suggestions" role="listbox" aria-label="ผลการค้นหาอำเภอ" hidden></ul>
         </form>

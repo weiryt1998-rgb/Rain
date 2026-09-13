@@ -681,6 +681,8 @@
     el.saveBtn.title = label;
     el.savedCount.textContent = String(state.favorites.length);
     el.savedCount.setAttribute('aria-label', `บันทึกแล้ว ${state.favorites.length} อำเภอ`);
+    // The phone dock shows the count as a badge on the bookmark icon, only when there is something saved.
+    el.savedCount.classList.toggle('is-empty', state.favorites.length === 0);
   }
 
   function summaryMarkup(district) {
@@ -968,6 +970,14 @@
 
     el.searchInput.addEventListener('input', () => { state.suggestionIndex = -1; openSuggestions(); });
     el.searchInput.addEventListener('focus', openSuggestions);
+    if (window.matchMedia && el.searchInput.dataset.placeholderShort) {
+      // The phone topbar has no room for the full placeholder; the aria-label keeps the full wording.
+      const compact = window.matchMedia('(max-width: 640px)');
+      const fullPlaceholder = el.searchInput.placeholder;
+      const syncPlaceholder = () => { el.searchInput.placeholder = compact.matches ? el.searchInput.dataset.placeholderShort : fullPlaceholder; };
+      compact.addEventListener('change', syncPlaceholder);
+      syncPlaceholder();
+    }
     el.searchInput.addEventListener('keydown', event => {
       const options = Array.from(el.suggestions.querySelectorAll('[data-district]'));
       if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {

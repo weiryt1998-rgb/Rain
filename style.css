@@ -18,6 +18,7 @@
   /* Glass surfaces (frosted white) */
   --glass: rgba(255, 255, 255, 0.42);
   --glass-strong: rgba(255, 255, 255, 0.72);
+  --glass-solid: rgba(255, 255, 255, 0.92); /* popovers floating over other cards on small screens */
   --glass-soft: rgba(255, 255, 255, 0.16);
   --glass-hover: rgba(255, 255, 255, 0.3);
   --glass-border: rgba(255, 255, 255, 0.62);
@@ -77,6 +78,7 @@
   color-scheme: dark;
   --glass: rgba(12, 18, 44, 0.34);
   --glass-strong: rgba(12, 18, 44, 0.76);
+  --glass-solid: rgba(14, 20, 48, 0.94);
   --glass-soft: rgba(255, 255, 255, 0.06);
   --glass-hover: rgba(255, 255, 255, 0.13);
   --glass-border: rgba(255, 255, 255, 0.2);
@@ -288,6 +290,7 @@ svg.icon.muted { color: var(--text-faint); }
 .nav-item.is-active { color: var(--text); background: var(--glass-hover); border-color: var(--glass-border); box-shadow: inset 0 1px 0 var(--glass-highlight), var(--shadow-soft); }
 .nav-item.is-active .icon { color: var(--brand); }
 .nav-item .icon { width: 20px; height: 20px; }
+.nav-label-short { display: none; } /* only the phone dock uses the short wording */
 .nav-count { margin-left: auto; min-width: 22px; padding: 1px 7px; border-radius: 999px; text-align: center; font-size: 12px; font-weight: 600; background: var(--glass-soft); border: 1px solid var(--glass-border); font-variant-numeric: tabular-nums; }
 .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 16px; }
 .local-note {
@@ -683,8 +686,8 @@ svg.icon.muted { color: var(--text-faint); }
 
 @media (max-width: 1100px) {
   .dashboard-grid { grid-template-columns: 1fr; }
-  .hero-art { display: none; }
-  .current-body { grid-template-columns: 1fr; }
+  /* Single column: the photo keeps the right half, the card no longer reserves desktop height */
+  .current-body { grid-template-columns: 1fr; min-height: 150px; }
 }
 
 @media (max-width: 900px) {
@@ -699,41 +702,180 @@ svg.icon.muted { color: var(--text-faint); }
   .search { max-width: none; }
 }
 
+/* Phone layout: one column, a compact sticky topbar, a floating bottom dock,
+   and denser cards so the forecast fits in far fewer screens of scrolling. */
 @media (max-width: 640px) {
-  :root { --frame: 12px; --glass-blur: 10px; }
-  html { scroll-padding-top: 84px; }
+  :root { --frame: 12px; --glass-blur: 10px; --radius: 20px; --radius-sm: 16px; --dock-height: 64px; }
+  html { scroll-padding-top: 76px; }
   body { flex-direction: column; }
+
   /* Floating glass dock */
   .sidebar {
     position: fixed; top: auto; bottom: calc(var(--frame) + env(safe-area-inset-bottom)); left: var(--frame); right: var(--frame); width: auto; height: auto; z-index: 40;
-    margin: 0; flex-direction: row; justify-content: center; padding: 6px 8px; border-radius: 22px;
+    margin: 0; flex-direction: row; justify-content: center; padding: 5px; border-radius: 22px;
   }
   .brand { display: none; }
-  .nav { flex-direction: row; justify-content: space-around; gap: 0; }
-  .nav-item { flex: 1; flex-direction: column; gap: 4px; padding: 8px 4px; font-size: 11px; border-radius: 16px; }
-  .nav-item > span:not(.nav-count) { display: block; }
+  .nav { flex-direction: row; justify-content: space-around; gap: 2px; }
+  .nav-item { position: relative; flex: 1; flex-direction: column; justify-content: center; gap: 3px; min-height: 54px; padding: 6px 2px; font-size: 11.5px; line-height: 1.2; border-radius: 17px; }
+  .nav-item .icon { width: 22px; height: 22px; }
+  .nav-item.is-active { box-shadow: inset 0 1px 0 var(--glass-highlight); }
+  /* Full wording stays for assistive tech; the short label is what fits under the icon */
+  .nav-item > .nav-label { display: block; position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .nav-item > .nav-label-short { display: block; }
   .nav-count { display: none; }
-  .workspace { padding-bottom: 96px; }
-  .topbar { margin: var(--frame) var(--frame) 0; padding: 8px 10px 8px 14px; border-radius: 18px; }
-  .topbar-divider { display: none; }
-  .search kbd { display: none; }
-  .main { padding: 20px 16px 40px; gap: 20px; }
-  .page-heading h1 { font-size: 26px; }
-  .current-card { padding: 22px 20px; }
-  .current-temperature #current-temp { font-size: 68px; }
-  .current-update { margin-left: 0; width: 100%; }
-  .daily-row { grid-template-columns: 62px minmax(0, 1fr) 50px; row-gap: 6px; }
-  .daily-range { grid-column: 1 / -1; }
-  .daily-legend { display: none; }
-  .details-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .metric-card { padding: 16px; }
-  .metric-value { font-size: 26px; }
-  .weather-insight { flex-wrap: wrap; }
-  .footer { flex-direction: column; text-align: center; padding: 18px 16px; }
-  .suggestions { max-height: 260px; }
-  .status-banner { flex-wrap: wrap; }
+  .nav-item[data-nav="saved"] .nav-count:not(.is-empty) {
+    display: block; position: absolute; top: 5px; left: calc(50% + 5px); min-width: 17px; height: 17px; padding: 0 5px; margin: 0;
+    font-size: 10px; line-height: 15px; background: var(--brand); color: var(--brand-contrast); border-color: transparent; box-shadow: 0 2px 6px color-mix(in srgb, var(--brand) 50%, transparent);
+  }
+  .workspace { padding-bottom: calc(var(--dock-height) + var(--frame) * 2 + env(safe-area-inset-bottom)); }
+
+  /* Topbar: search gets the width, the three actions shrink to 38px */
+  .topbar { margin: var(--frame) var(--frame) 0; padding: 6px 7px; gap: 6px; border-radius: 18px; }
+  .topbar-actions { gap: 6px; }
+  .topbar-divider, .search kbd { display: none; }
+  .topbar .icon-button { width: 38px; height: 38px; box-shadow: inset 0 1px 0 var(--glass-highlight); }
+  /* The search field drops its own blur (the topbar already blurs) so the
+     suggestion list can be positioned against the full-width topbar instead. */
+  .search { position: static; height: 38px; padding: 0 12px; gap: 8px; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .search .icon { width: 17px; height: 17px; }
+  .suggestions { left: 6px; right: 6px; top: calc(100% + 6px); max-height: min(60vh, 340px); padding: 6px; background: var(--glass-solid); }
+  .suggestions li { padding: 11px 12px; min-height: 46px; }
+  .suggestions li span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .suggestions li small { flex: 0 1 auto; min-width: 0; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-left: 8px; font-size: 12px; }
+
+  .main { padding: 14px var(--frame) 28px; gap: 16px; }
+  .dashboard-grid { gap: 14px; }
+  .card { padding: 16px; }
+  .section-heading h2 { font-size: 17px; }
+
+  /* Heading: title stacked, controls in one row beneath */
+  .page-heading { gap: 12px; padding: 0 2px; }
+  .eyebrow { font-size: 10px; margin-bottom: 4px; }
+  .page-heading h1 { font-size: 24px; }
+  .page-heading p { font-size: 14px; margin-top: 4px; }
+  .heading-actions { width: 100%; gap: 8px; }
+  .live-status { margin-right: auto; font-size: 12px; }
+  .refresh-btn { width: 38px; height: 38px; }
+  .unit-toggle button { padding: 7px 12px; font-size: 13px; }
+  .status-banner { flex-wrap: wrap; padding: 12px 14px; }
   .status-banner span { flex-basis: 100%; }
-  .toast { bottom: calc(96px + env(safe-area-inset-bottom)); }
+
+  /* Current weather: the Sukhothai photo returns on the right, stats become three tiles */
+  .current-card { padding: 18px 18px 16px; gap: 14px; }
+  .current-card > .hero-art {
+    width: 66%; opacity: 0.85;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 48%), linear-gradient(180deg, #000 50%, transparent 90%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 48%), linear-gradient(180deg, #000 50%, transparent 90%);
+  }
+  .hero-art span { display: none; }
+  .current-location h2 { font-size: 20px; }
+  .current-top p { font-size: 13px; }
+  .hero-save { width: 40px; height: 40px; }
+  .current-body { grid-template-columns: 1fr; min-height: 0; margin-top: 6px; }
+  .temperature-block { gap: 4px; }
+  .current-temperature #current-temp { font-size: 72px; }
+  .temperature-unit { font-size: 24px; margin-top: 10px; }
+  .current-condition { font-size: 17px; }
+  .current-condition .weather-icon { width: 30px; height: 30px; }
+  .feels-like { font-size: 13px; }
+  .current-bottom { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding-top: 14px; font-size: 12px; }
+  .current-bottom > span {
+    flex-direction: column; align-items: flex-start; gap: 1px; padding: 9px 10px; border-radius: 13px;
+    background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.16); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18); line-height: 1.35;
+  }
+  .current-bottom > span .icon { width: 16px; height: 16px; margin-bottom: 3px; }
+  .current-bottom strong { font-size: 15px; }
+  .current-bottom > .current-update { grid-column: 1 / -1; flex-direction: row; margin: 0; padding: 0 2px; background: none; border: 0; box-shadow: none; width: 100%; font-size: 12px; }
+
+  /* 7-day list: one compact two-line row per day. The day and condition wrappers
+     dissolve (display: contents) so the name, date and condition text can be
+     placed on the grid directly: name on line one, date + condition on line two. */
+  .daily-legend { display: none; }
+  .daily-list { gap: 0; }
+  .daily-row { grid-template-columns: auto minmax(0, 1fr) 26px auto 104px; grid-template-rows: auto auto; column-gap: 8px; row-gap: 1px; padding: 8px; min-height: 52px; border-radius: 12px; }
+  .daily-day, .daily-condition { display: contents; }
+  .daily-day strong { grid-row: 1; grid-column: 1 / span 2; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .daily-day small { grid-row: 2; grid-column: 1; font-size: 12px; white-space: nowrap; }
+  .daily-condition span { grid-row: 2; grid-column: 2; font-size: 12px; color: var(--text-muted); }
+  .daily-condition .weather-icon { grid-row: 1 / span 2; grid-column: 3; width: 26px; height: 26px; }
+  .daily-rain { grid-row: 1 / span 2; grid-column: 4; font-size: 12px; }
+  .daily-range { grid-row: 1 / span 2; grid-column: 5; font-size: 13px; gap: 5px; }
+  .daily-min, .daily-max { width: 28px; }
+  .daily-footnote { margin-top: 10px; }
+
+  /* Hourly: full-width segmented tabs, unit on the right, reset on its own line */
+  .hourly-heading { align-items: center; }
+  .hourly-arrows .icon-button { width: 34px; height: 34px; }
+  .forecast-controls { margin: 12px 0 8px; gap: 8px; }
+  .chart-tabs { order: 1; flex: 1; display: flex; min-width: 0; }
+  .chart-tabs button { flex: 1; padding: 8px 4px; font-size: 13px; white-space: nowrap; }
+  .chart-unit { order: 2; margin-left: 0; flex-shrink: 0; }
+  #reset-day { order: 3; flex-basis: 100%; justify-content: center; padding: 9px 12px; background: var(--brand-tint); }
+  .hour-item { width: 76px; }
+  .hourly-summary { font-size: 12px; }
+
+  /* Details: heading stacks; the six metrics sit two per row */
+  .details-section .outside-heading { flex-direction: column; align-items: flex-start; gap: 2px; margin-bottom: 12px; }
+  .outside-heading { padding: 0 2px; }
+  .outside-heading h2 { font-size: 18px; }
+  .outside-heading .section-meta, .outside-heading .section-description { font-size: 13px; }
+  .details-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .metric-card { padding: 14px; gap: 10px; }
+  .metric-title { gap: 8px; }
+  .metric-title .icon { width: 28px; height: 28px; padding: 6px; border-radius: 9px; }
+  .metric-title h3 { font-size: 13px; }
+  .metric-badge { padding: 2px 7px; font-size: 10px; }
+  .metric-value { font-size: 24px; }
+  .metric-value small { font-size: 12px; margin-left: 4px; }
+  .metric-card > p { font-size: 11px; }
+  .sun-times strong { font-size: 16px; }
+  #wind-arrow { width: 28px; height: 28px; font-size: 16px; }
+
+  /* Insight: icon beside the text, the TMD link becomes a full-width button */
+  .weather-insight { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px 14px; padding: 16px; }
+  .insight-icon { width: 44px; height: 44px; border-radius: 14px; }
+  .insight-icon .icon { width: 22px; height: 22px; }
+  .weather-insight h2 { font-size: 16px; }
+  .weather-insight p { font-size: 13px; }
+  .weather-insight a { grid-column: 1 / -1; text-align: center; white-space: normal; padding: 11px 14px; }
+
+  /* Districts: two compact cards per row instead of one tall card each */
+  .districts-section .outside-heading { align-items: flex-start; }
+  .district-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .district-grid > .district-card:last-child:nth-child(odd) { grid-column: 1 / -1; } /* nine districts: the last one fills its row */
+  .district-card, .saved-open { padding: 14px; gap: 6px; }
+  .district-name { padding-right: 22px; }
+  .district-name strong { font-size: 14px; }
+  .district-name small { font-size: 11px; }
+  .district-temp { font-size: 24px; }
+  .district-condition { font-size: 12px; }
+  .district-condition .weather-icon { width: 18px; height: 18px; }
+  .district-rain { font-size: 11px; }
+  .district-saved { top: 13px; right: 12px; width: 15px; height: 15px; }
+  .district-badge { bottom: 12px; right: 12px; padding: 2px 8px; font-size: 10px; }
+  .district-note { font-size: 11px; margin-top: 10px; padding: 0 2px; }
+  .saved-list { grid-template-columns: 1fr; gap: 10px; }
+  .saved-card .saved-open { flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 12px; padding-right: 48px; }
+  .saved-card .district-name { flex: 1 1 100%; padding-right: 0; }
+  .saved-card .district-temp { margin-top: 0; }
+  .empty-state { padding: 16px; font-size: 14px; }
+
+  .footer { flex-direction: column; text-align: center; padding: 16px 14px; gap: 10px; font-size: 12px; }
+  .footer-brand { font-size: 18px; }
+  .footer p span { font-size: 11px; }
+  .toast { bottom: calc(var(--dock-height) + var(--frame) * 2 + env(safe-area-inset-bottom)); }
+}
+
+/* Small phones (≤380px): tighter 7-day columns so the condition text still fits */
+@media (max-width: 380px) {
+  .daily-row { grid-template-columns: auto minmax(0, 1fr) 24px auto 90px; column-gap: 6px; }
+  .daily-day small, .daily-condition span { font-size: 11.5px; }
+  .daily-rain { font-size: 11px; }
+  .daily-range { gap: 4px; font-size: 12.5px; }
+  .daily-min, .daily-max { width: 26px; }
+  .current-temperature #current-temp { font-size: 66px; }
+  .current-bottom { gap: 6px; }
+  .current-bottom > span { padding: 8px; }
 }
 
 /* 13. Motion, fallbacks & print ------------------------------------------ */
