@@ -6,7 +6,7 @@
 'use strict';
 
 // Bump when a shell file changes in a way that must reach offline users immediately.
-const VERSION = 'rain-shell-v4';
+const VERSION = 'rain-shell-v5';
 const SHELL = ['./', './index.html', './style.css', './script.js', './weather-core.js', './weather-backdrop.js', './theme-init.js', './favicon.svg', './manifest.webmanifest'];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
