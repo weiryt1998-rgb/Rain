@@ -4,6 +4,12 @@
  * District reference points: Department of Livestock Development, page 7:
  * https://dld.go.th/th/images/stories/about_us/gisdld/06.pdf
  * These are representative district office areas, not district boundaries.
+ *
+ * Hourly rows returned by this module describe the hour that STARTS at `time`:
+ * instantaneous readings (temperature, humidity, wind, UV, visibility) are the
+ * values at `time`, and rain, rain chance and the weather code cover the hour
+ * from `time` to `time` + 1 h. Open-Meteo reports the latter for the hour
+ * ending at each timestamp, so normalizeWeather shifts them by one row.
  */
 (function (root, factory) {
   'use strict';
@@ -15,7 +21,8 @@
 
   const TIMEZONE = 'Asia/Bangkok';
   const DAY_MS = 86400000;
-  const CACHE_VERSION = 1;
+  // Bumped whenever the normalized shape or meaning changes, so an older cache is refetched rather than reused.
+  const CACHE_VERSION = 2;
   const CACHE_PREFIX = 'sukhothai-weather:v1:';
   const DISTRICTS = Object.freeze([
     { id: 'mueang', name: 'เมืองสุโขทัย', english: 'Mueang Sukhothai', lat: 17.0077, lon: 99.8228 },
@@ -149,10 +156,13 @@
 
   function uvInfo(value) {
     if (!isNumber(value) || value < 0) return { label: 'ไม่มีข้อมูล', level: 'unknown' };
-    if (value < 3) return { label: 'ต่ำ', level: 'low' };
-    if (value < 6) return { label: 'ปานกลาง', level: 'moderate' };
-    if (value < 8) return { label: 'สูง', level: 'high' };
-    if (value < 11) return { label: 'สูงมาก', level: 'very-high' };
+    // WHO defines the exposure categories on the UV index reported as a whole number,
+    // so a forecast of 2.6 belongs to "moderate" (3), not "low".
+    const index = Math.round(value);
+    if (index < 3) return { label: 'ต่ำ', level: 'low' };
+    if (index < 6) return { label: 'ปานกลาง', level: 'moderate' };
+    if (index < 8) return { label: 'สูง', level: 'high' };
+    if (index < 11) return { label: 'สูงมาก', level: 'very-high' };
     return { label: 'สูงจัด', level: 'extreme' };
   }
 
@@ -202,11 +212,15 @@
         windDirection: inRange(current.wind_direction_10m, 0, 360), gustKph: inRange(current.wind_gusts_10m, 0, Infinity),
         pressure: inRange(current.pressure_msl, 0, Infinity), precipitation: inRange(current.precipitation, 0, Infinity)
       },
+      // Open-Meteo gives precipitation, its probability and the weather code derived from
+      // them for the hour ENDING at each timestamp. Take them from the next row so each
+      // entry covers the hour starting at `time`, as the UI labels it. The last row has
+      // no successor and therefore no rain figures.
       hourly: data.hourly.time.map((time, index) => ({
         time, temp: at(data.hourly, 'temperature_2m', index), feelsLike: at(data.hourly, 'apparent_temperature', index),
-        code: at(data.hourly, 'weather_code', index), isDay: dayFlag(data.hourly.is_day[index]),
-        rainChance: inRange(at(data.hourly, 'precipitation_probability', index), 0, 100),
-        rainMm: inRange(at(data.hourly, 'precipitation', index), 0, Infinity),
+        code: at(data.hourly, 'weather_code', index + 1), isDay: dayFlag(data.hourly.is_day[index]),
+        rainChance: inRange(at(data.hourly, 'precipitation_probability', index + 1), 0, 100),
+        rainMm: inRange(at(data.hourly, 'precipitation', index + 1), 0, Infinity),
         humidity: inRange(at(data.hourly, 'relative_humidity_2m', index), 0, 100),
         windKph: inRange(at(data.hourly, 'wind_speed_10m', index), 0, Infinity),
         uv: inRange(at(data.hourly, 'uv_index', index), 0, Infinity),

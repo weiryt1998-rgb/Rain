@@ -176,6 +176,40 @@ test('weather, wind and UV presentation handles night, boundaries and unknown me
   for (const [value, level] of [[0, 'low'], [3, 'moderate'], [6, 'high'], [8, 'very-high'], [11, 'extreme'], [null, 'unknown'], [-1, 'unknown']]) {
     assert.equal(core.uvInfo(value).level, level);
   }
+  // WHO categories apply to the index rounded to a whole number, so 2.5 is already "moderate".
+  for (const [value, level] of [[2.4, 'low'], [2.5, 'moderate'], [5.4, 'moderate'], [5.5, 'high'], [7.4, 'high'], [7.5, 'very-high'], [10.4, 'very-high'], [10.5, 'extreme']]) {
+    assert.equal(core.uvInfo(value).level, level, `uv ${value}`);
+  }
+});
+
+test('hourly rain, rain chance and weather code cover the hour starting at each timestamp', async () => {
+  // Open-Meteo reports these three for the hour ending at the timestamp; instantaneous readings are not shifted.
+  const source = forecastFixture();
+  source.hourly.precipitation_probability = source.hourly.time.map((_, index) => index % 101);
+  source.hourly.precipitation = source.hourly.time.map((_, index) => index / 10);
+  source.hourly.weather_code = source.hourly.time.map((_, index) => (index % 2 ? 95 : 61));
+  source.hourly.temperature_2m = source.hourly.time.map((_, index) => 20 + index / 100);
+  source.hourly.uv_index = source.hourly.time.map((_, index) => index / 50);
+  const h = harness(source);
+  const weather = await h.core.fetchWeather(h.core.DISTRICTS[0]);
+  assert.equal(weather.hourly.length, 192);
+  for (let index = 0; index < 191; index++) {
+    const hour = weather.hourly[index];
+    assert.equal(hour.time, source.hourly.time[index]);
+    assert.equal(hour.rainChance, (index + 1) % 101, `rainChance at ${hour.time}`);
+    assert.equal(hour.rainMm, (index + 1) / 10, `rainMm at ${hour.time}`);
+    assert.equal(hour.code, (index + 1) % 2 ? 95 : 61, `code at ${hour.time}`);
+    assert.equal(hour.temp, 20 + index / 100, `temp at ${hour.time}`);
+    assert.equal(hour.uv, index / 50, `uv at ${hour.time}`);
+  }
+  const last = weather.hourly[191];
+  assert.equal(last.rainChance, null);
+  assert.equal(last.rainMm, null);
+  assert.equal(last.code, null);
+  assert.equal(last.temp, 20 + 191 / 100);
+  // The shifted rows round-trip through the cache unchanged.
+  assert.equal(h.core.writeCache('mueang', weather), true);
+  assert.deepEqual(copy(h.core.readCache('mueang')), copy(weather));
 });
 
 test('fetch converts a real-shaped eight-day API response and uses canonical district coordinates', async () => {
@@ -221,9 +255,11 @@ test('nullable API measurements stay null while genuine zero values stay zero', 
   const source = forecastFixture();
   Object.assign(source.current, { relative_humidity_2m: null, wind_gusts_10m: null, weather_code: null, is_day: null, wind_speed_10m: 0, wind_direction_10m: 0, precipitation: 0 });
   for (const [field, values] of Object.entries(source.hourly)) if (field !== 'time') values[0] = null;
+  // Rain figures and the weather code of hourly[0] are read from the next API row.
+  for (const field of ['precipitation_probability', 'precipitation', 'weather_code']) source.hourly[field][1] = null;
   for (const [field, values] of Object.entries(source.daily)) if (field !== 'time') values[0] = null;
-  source.hourly.precipitation_probability[1] = 0;
-  source.hourly.precipitation[1] = 0;
+  source.hourly.precipitation_probability[2] = 0;
+  source.hourly.precipitation[2] = 0;
   source.hourly.visibility[1] = 0;
   const h = harness(source);
   const weather = await h.core.fetchWeather(h.core.DISTRICTS[0]);
@@ -246,7 +282,7 @@ test('out-of-range environmental readings are treated as missing', async () => {
   const source = forecastFixture();
   source.current.relative_humidity_2m = 101;
   source.current.wind_speed_10m = -1;
-  source.hourly.precipitation_probability[0] = -1;
+  source.hourly.precipitation_probability[1] = -1; // feeds hourly[0] (hour starting at row 0)
   source.hourly.visibility[0] = -100;
   source.daily.uv_index_max[0] = -1;
   const h = harness(source);
@@ -376,6 +412,7 @@ test('cache is isolated by district and expires after 24 hours', async () => {
 test('malformed cached envelopes and weather rows are ignored safely', async t => {
   const cases = [
     ['old schema', cached => { cached.version = 0; }],
+    ['previous cache version (rain figures for the preceding hour)', cached => { cached.version = 1; }],
     ['different district', cached => { cached.districtId = 'si-nakhon'; }],
     ['invalid timestamp', cached => { cached.weather.fetchedAt = 'today'; }],
     ['missing current object', cached => { cached.weather.current = null; }],

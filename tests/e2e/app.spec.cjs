@@ -47,7 +47,8 @@ test('renders the dashboard from the forecast response', async ({ page }) => {
   await expect(page.locator('#d-humidity')).toContainText('75');
   await expect(page.locator('#humidity-meter')).toHaveAttribute('aria-valuenow', '75');
   await expect(page.locator('#wind-direction')).toHaveText('พัดจากทิศตะวันตกเฉียงใต้');
-  await expect(page.locator('#uv-badge')).toHaveText('สูง');
+  await expect(page.locator('#d-uv')).toContainText('7.5');
+  await expect(page.locator('#uv-badge')).toHaveText('สูงมาก'); // WHO rounds the index: 7.5 → 8
   await expect(page.locator('#sunrise')).toHaveText('06:08');
   await expect(page.locator('#sunset')).toHaveText('18:25');
   await expect(page.locator('#sun-note')).toContainText('เหลือแสงอีก 3 ชม. 55 นาที');
@@ -142,6 +143,18 @@ test('selecting a day filters the hourly forecast and can be reset', async ({ pa
   await expect(page.locator('#hourly-subtitle')).toContainText('24 ชั่วโมงข้างหน้า');
   await expect(page.locator('.hour-item.is-now')).toHaveCount(1);
   await expect(page.locator('#reset-day')).toBeHidden();
+});
+
+test('hourly rain chance describes the hour ahead, not the hour that just ended', async ({ page }) => {
+  await openApp(page);
+  // Open-Meteo rows 15:00–19:00 carry 70% for the hour ending at each timestamp,
+  // so at 14:30 the current hour (14:00–15:00) is the first wet one and 19:00–20:00 is dry again.
+  await expect(page.locator('#current-rain')).toHaveText('70%');
+  await expect(page.locator('.hour-item.is-now .hour-meta')).toContainText('70%');
+  await expect(page.locator('.hour-item').filter({ hasText: '13:00' }).locator('.hour-meta')).toContainText('15%');
+  await expect(page.locator('.hour-item').filter({ hasText: '18:00' }).locator('.hour-meta')).toContainText('70%');
+  await expect(page.locator('.hour-item').filter({ hasText: '19:00' }).locator('.hour-meta')).toContainText('15%');
+  await expect(page.locator('#hourly-summary')).toContainText('โอกาสฝนสูงสุด 70% ช่วง 14:00 น.');
 });
 
 test('keeps showing the cached forecast with a stale banner when the API fails', async ({ page }) => {
